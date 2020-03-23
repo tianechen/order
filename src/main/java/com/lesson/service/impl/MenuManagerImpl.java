@@ -3,15 +3,22 @@ package com.lesson.service.impl;
 import com.lesson.model.Menu;
 import com.lesson.dao.MenuDAO;
 import com.lesson.service.MenuManager;
+import javafx.util.Builder;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.xmind.core.*;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class MenuManagerImpl implements MenuManager {
     Logger logger = Logger.getLogger(MenuManagerImpl.class);
+
+   final static List<String> FIRSTNAME = new ArrayList<String>();
 
     @Autowired
     MenuDAO menuDAO;
@@ -63,5 +70,62 @@ public class MenuManagerImpl implements MenuManager {
             logger.info("对应菜品删除失败, mid = " + mid);
         }
         return inpactRowNum;
+    }
+
+
+    // 解析xmind
+    public static void main(String[] args) {
+        IWorkbookBuilder builder = Core.getWorkbookBuilder();// 初始化builder
+        IWorkbook workbook = null;
+        try {
+        File file = new File("D:\\cte\\auto_case\\shop.xmind");
+        workbook = builder.loadFromFile(file);// 打开XMind文件
+        } catch (Exception e) {
+
+        }
+        ISheet defSheet = workbook.getPrimarySheet();// 获取主Sheet
+        ITopic rootTopic = defSheet.getRootTopic(); // 获取根Topic
+        String className = rootTopic.getTitleText();//节点TitleText
+        List<ITopic> iTopics = rootTopic.getAllChildren();//获取所有子节点
+        //调用如下
+        StringBuilder sb = new StringBuilder();
+        sb.append(className);//放入根节点名称
+        GetXmind(iTopics,sb);
+    }
+
+    private static boolean GetXmind(List<ITopic> list, StringBuilder name){
+        String lastName = "";
+        if(CollectionUtils.isEmpty(list)) {
+            return false;
+        }
+        if(list.size() == 1 && CollectionUtils.isEmpty(list.get(0).getAllChildren())) {
+            lastName = list.get(0).getTitleText();
+            System.out.println("firstName:"+name.toString());
+            System.out.println("lastName:"+lastName);
+
+            //System.out.println(name.toString()+"/"+list.get(0).getTitleText());
+            return true;
+        }
+        for (ITopic iTopic : list) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(name.toString());
+            String firstName = sb.toString();
+            sb.append("/").append(iTopic.getTitleText());
+            boolean state = GetXmind(iTopic.getAllChildren(), sb);
+            if(!state){
+                lastName = iTopic.getTitleText();
+//                if (!FIRSTNAME.contains(firstName)){
+//                    System.out.println("firstName:"+firstName);
+//                    FIRSTNAME.add(firstName);
+//                }
+                System.out.println("firstName:"+firstName);
+                System.out.println("lastName:"+lastName);
+
+
+                //System.out.println(sb.toString());
+            }
+
+        }
+        return true;
     }
 }

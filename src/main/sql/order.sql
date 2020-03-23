@@ -1,16 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `order`;
-USE `order`;
-
-DROP TABLE IF EXISTS `categories`;
-CREATE TABLE `categories` (
-  `cid` int(11) NOT NULL AUTO_INCREMENT,
-  `cname` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`cid`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
-
-LOCK TABLES `categories` WRITE;
-INSERT INTO `categories` VALUES (1,'北京菜'),(2,'新疆菜'),(3,'朝鲜族菜'),(4,'四川风味菜'),(10,'上海菜'),(11,'河南菜');
-UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `menus`;
 CREATE TABLE `menus` (
